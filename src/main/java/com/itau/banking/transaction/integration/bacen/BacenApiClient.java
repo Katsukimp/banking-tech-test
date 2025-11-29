@@ -3,6 +3,7 @@ package com.itau.banking.transaction.integration.bacen;
 import com.itau.banking.transaction.shared.exception.BacenApiException;
 import com.itau.banking.transaction.integration.bacen.dto.BacenNotificationRequest;
 import com.itau.banking.transaction.integration.bacen.dto.BacenNotificationResponse;
+import com.itau.banking.transaction.shared.exception.BacenRateLimitException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ public class BacenApiClient {
     
     private static final double FAILURE_RATE = 0.05;
     private static final double TIMEOUT_RATE = 0.02;
+    private static final double RATE_LIMIT_RATE = 0.10;
 
     @CircuitBreaker(name = "bacenApi", fallbackMethod = "notifyTransactionFallback")
     @Retry(name = "bacenApi")
@@ -28,6 +30,11 @@ public class BacenApiClient {
                 request.getDestinationAccountNumber());
         
         simulateNetworkLatency();
+        
+        if (Math.random() < RATE_LIMIT_RATE) {
+            log.warn("Mock BACEN: Rate limit excedido (429) na transação {}", request.getTransactionId());
+            throw new BacenRateLimitException("HTTP 429 - Too Many Requests: Rate limit excedido no BACEN");
+        }
         
         if (Math.random() < TIMEOUT_RATE) {
             log.error("Mock BACEN: Timeout na transação {}", request.getTransactionId());
