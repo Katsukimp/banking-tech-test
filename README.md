@@ -21,6 +21,7 @@ Sistema de transferências bancárias que processa ~150 req/s com latência P99 
 - Cache Redis de dados do cliente (TTL 24h)
 
 ## Arquitetura
+Arquitetura em Camadas Tradicional com padrões DDD (Domain-Driven Design) e Spring Framework
 
 **Fluxo de Transferência:**
 1. Verificação de idempotência (Redis)
