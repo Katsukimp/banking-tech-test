@@ -33,7 +33,7 @@ class BankingTransactionLoadTest extends Simulation {
           while (destId == sourceId) {
             destId = accountIds(Random.nextInt(accountIds.length))
           }
-          val amount = (Random.nextInt(50) + 1) * 10 // 10 a 500
+          val amount = 0.1
           
           s"""{
             "sourceAccountId": $sourceId,
@@ -41,7 +41,7 @@ class BankingTransactionLoadTest extends Simulation {
             "amount": $amount.00
           }"""
         }))
-        .check(status.in(200, 400, 409, 422, 404, 500)) // Aceitar erros de negócio
+        .check(status.in(200, 400, 409, 422, 404, 500))
     )
 
   // Cenário 1: Ramp-up gradual

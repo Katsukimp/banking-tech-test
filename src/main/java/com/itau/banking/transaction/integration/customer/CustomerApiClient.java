@@ -67,8 +67,22 @@ public class CustomerApiClient {
     }
 
     public CustomerDto findCustomerById(Long customerId) {
-        log.info("[CustomerApiClient].[findCustomerById] - Cache miss - Cliente {} não encontrado no cache, consultando API externa", customerId);
-        return fetchCustomerFromApi(customerId);
+        String cacheKey = bankingProperties.getCache().getCustomer().getPrefix() + customerId;
+        CustomerDto cachedCustomer = (CustomerDto) redisTemplate.opsForValue().get(cacheKey);
+        
+        if (cachedCustomer != null) {
+            log.info("[CustomerApiClient].[findCustomerById] - Cliente {} encontrado no Redis: {}", customerId, cachedCustomer.getName());
+            return cachedCustomer;
+        }
+        
+        log.info("[CustomerApiClient].[findCustomerById] - Cache miss - Cliente {} não encontrado no Redis, consultando API externa", customerId);
+        
+        CustomerDto customer = fetchCustomerFromApi(customerId);
+        Duration ttl = Duration.ofHours(bankingProperties.getCache().getCustomer().getTtlHours());
+        redisTemplate.opsForValue().set(cacheKey, customer, ttl);
+        log.info("[CustomerApiClient].[findCustomerById] - Cliente {} salvo no Redis com TTL de {}h", customerId, bankingProperties.getCache().getCustomer().getTtlHours());
+        
+        return customer;
     }
     
     @CircuitBreaker(name = "customerApi", fallbackMethod = "findCustomerByIdFallback")

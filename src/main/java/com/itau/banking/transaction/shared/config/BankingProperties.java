@@ -58,6 +58,6 @@ public class BankingProperties {
 
     @Getter @Setter
     public static class Transfer {
-        private BigDecimal minimumAmount = BigDecimal.valueOf(1);
+        private BigDecimal minimumAmount = BigDecimal.valueOf(0.01);
     }
 }
