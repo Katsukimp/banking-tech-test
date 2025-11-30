@@ -105,7 +105,9 @@ public class DailyLimitService {
     }
 
     private BigDecimal calculateFromTransactions(Long accountId, LocalDate date) {
-        return transactionRepository.sumDailyTransactionsByAccountId(accountId, date);
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+        return transactionRepository.sumDailyTransactionsByAccountId(accountId, startOfDay, endOfDay);
     }
 
     private String buildRedisKey(Long accountId, LocalDate date) {

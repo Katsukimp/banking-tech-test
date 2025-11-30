@@ -29,7 +29,7 @@ public class TransactionController {
 
     @PostMapping("/transfer")
     public ResponseEntity<TransferResponse> transfer(
-            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestHeader(value = "Idempotency-Key") String idempotencyKey,
             @RequestBody TransferRequest request
     ) {
         if (idempotencyKey != null && !idempotencyService.isValidIdempotencyKey(idempotencyKey)) {
