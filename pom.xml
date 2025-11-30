@@ -240,13 +240,31 @@
 				</executions>
 			</plugin>
 			
-			<!-- Gatling: testes de carga -->
+			<!-- Scala: necessário para compilar testes Gatling -->
 			<plugin>
-				<groupId>io.gatling</groupId>
-				<artifactId>gatling-maven-plugin</artifactId>
-				<version>4.10.1</version>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
+				<version>4.8.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-		</plugins>
-	</build>
-
-</project>
+			
+		<!-- Gatling: testes de carga -->
+		<plugin>
+			<groupId>io.gatling</groupId>
+			<artifactId>gatling-maven-plugin</artifactId>
+			<version>4.10.1</version>
+			<configuration>
+				<jvmArgs>
+					<jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
+					<jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
+				</jvmArgs>
+			</configuration>
+		</plugin>
+	</plugins>
+</build></project>
