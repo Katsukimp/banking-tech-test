@@ -10,12 +10,6 @@
 
 ---
 
-# Banking Transaction API
-
-Microserviço de transações bancárias com notificação BACEN para processamento de transferências com idempotência, resiliência e alta performance.
-
-**Stack:** Java 21 · Spring Boot 3.5.8 · PostgreSQL 15 · Redis · Kafka 3.9.1
-
 ## Visão Geral
 
 Sistema de transferências bancárias que processa ~150 req/s com latência P99 < 100ms, garantindo idempotência via Redis e resiliência com Circuit Breaker + Kafka.
