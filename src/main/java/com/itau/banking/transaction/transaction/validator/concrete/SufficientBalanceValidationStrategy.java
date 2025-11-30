@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Component
 @Slf4j
-@ValidationOrder(2)
+@ValidationOrder(4)
 public class SufficientBalanceValidationStrategy implements ValidationStrategy {
 
     @Override

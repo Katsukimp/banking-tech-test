@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@ValidationOrder(3)
+@ValidationOrder(5)
 public class DailyLimitValidationStrategy implements ValidationStrategy {
 
     private final DailyLimitService dailyLimitService;

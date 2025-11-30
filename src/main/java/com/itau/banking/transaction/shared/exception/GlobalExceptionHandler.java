@@ -1,7 +1,9 @@
 package com.itau.banking.transaction.shared.exception;
 
+import com.itau.banking.transaction.shared.config.BankingProperties;
 import com.itau.banking.transaction.shared.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
-    
+
+    private final BankingProperties bankingProperties;
+
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAccountNotFound(
             AccountNotFoundException ex,
@@ -43,6 +48,44 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.builder()
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .error("Insufficient Balance")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+    }
+
+    @ExceptionHandler(SelfTransferException.class)
+    public ResponseEntity<ErrorResponse> handleSelfTransfer(
+            SelfTransferException ex,
+            HttpServletRequest request) {
+
+        log.error("[GlobalExceptionHandler].[handleSelfTransfer] - Não é permitido transferir para a mesma conta: {}", ex.getMessage());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .error("Self Transfer Not Allowed")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+    }
+
+    @ExceptionHandler(MinimumAmountException.class)
+    public ResponseEntity<ErrorResponse> handleMinimumAmount(
+            MinimumAmountException ex,
+            HttpServletRequest request) {
+
+        log.error("[GlobalExceptionHandler].[handleMinimumAmount] - O valor de transferência deve ser maior ou igual R${} : {}"
+                ,bankingProperties.getTransfer().getMinimumAmount()
+                ,ex.getMessage());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .error("Minimum Transfer Amount Violation")
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())

@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -36,14 +35,14 @@ public class TransactionService {
     private final IdempotencyService idempotencyService;
 
     public TransferResponse transfer(TransferRequest request, String idempotencyKey){
-        CustomerDto customer = customerApiClient.findCustomerById(request.sourceAccountId());
-
         Account sourceAccount = accountService.findById(request.sourceAccountId());
         Account destinationAccount = accountService.findById(request.destinationAccountId());
+        
+        CustomerDto customer = customerApiClient.findCustomerById(sourceAccount.getCustomerId());
 
         validationStrategyFactory.validateAll(sourceAccount, destinationAccount, request.amount());
 
-        Transaction transaction = saveTransaction(customer, sourceAccount, destinationAccount, request.amount(), idempotencyKey);
+        Transaction transaction = saveTransaction(customer, sourceAccount, destinationAccount, request.amount(), request.description(), idempotencyKey);
 
         try {
             bacenNotificationService.sendSync(transaction, customer);
@@ -73,7 +72,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction saveTransaction(CustomerDto customer, Account sourceAccount, Account destinationAccount, BigDecimal amount, String idempotencyKey){
+    public Transaction saveTransaction(CustomerDto customer, Account sourceAccount, Account destinationAccount, BigDecimal amount, String description, String idempotencyKey){
         accountService.debit(sourceAccount, amount);
         accountService.credit(destinationAccount, amount);
 
@@ -83,6 +82,7 @@ public class TransactionService {
         transaction.setAmount(amount);
         transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setType(TransactionType.TRANSFER);
+        transaction.setDescription(description);
         transaction.setIdempotencyKey(idempotencyKey);
         transaction.setTransactionDate(LocalDateTime.now());
         transactionRepository.save(transaction);

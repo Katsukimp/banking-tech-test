@@ -43,6 +43,7 @@ public class BacenNotificationService {
                     .customerName(customer.getName())
                     .customerCpf(customer.getCpf())
                     .transactionDate(transaction.getCreatedAt())
+                    .transactionType(transaction.getType())
                     .build();
 
             String payload = objectMapper.writeValueAsString(request);
@@ -79,6 +80,7 @@ public class BacenNotificationService {
                     .customerName(customer.getName())
                     .customerCpf(customer.getCpf())
                     .transactionDate(transaction.getCreatedAt())
+                    .transactionType(transaction.getType())
                     .build();
 
             BacenNotificationResponse response = bacenApiClient.notifyTransaction(request);

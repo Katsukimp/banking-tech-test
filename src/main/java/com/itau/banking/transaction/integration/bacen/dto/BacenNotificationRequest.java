@@ -1,5 +1,6 @@
 package com.itau.banking.transaction.integration.bacen.dto;
 
+import com.itau.banking.transaction.shared.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class BacenNotificationRequest {
     private String destinationAccountNumber;
     
     private BigDecimal amount;
-    private String transactionType;
+    private TransactionType transactionType;
     
     private String customerName;
     private String customerCpf;
