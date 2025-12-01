@@ -380,3 +380,6 @@ docker-compose exec postgres psql -U admin -d itau_banking
 **Testes falhando:** `docker system prune -a` para limpar Docker  
 **Kafka não conecta:** `docker-compose restart zookeeper kafka`  
 **Redis timeout:** `docker-compose exec redis redis-cli ping` (deve retornar PONG)
+
+## Desenho de Arquitetura (AWS)
+<img width="1826" height="492" alt="image" src="https://github.com/user-attachments/assets/c81dd458-e6eb-4301-8da1-7307c499d88b" />
