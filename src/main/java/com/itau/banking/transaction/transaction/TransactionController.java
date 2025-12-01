@@ -1,11 +1,6 @@
 package com.itau.banking.transaction.transaction;
 
-import com.itau.banking.transaction.account.Account;
-import com.itau.banking.transaction.account.AccountService;
-import com.itau.banking.transaction.shared.exception.AccountNotFoundException;
-import com.itau.banking.transaction.shared.exception.DailyLimitExceededException;
 import com.itau.banking.transaction.shared.exception.DuplicateTransactionException;
-import com.itau.banking.transaction.shared.exception.InsufficientBalanceException;
 import com.itau.banking.transaction.shared.idempotency.IdempotencyService;
 import com.itau.banking.transaction.transaction.dto.TransferRequest;
 import com.itau.banking.transaction.transaction.dto.TransferResponse;
@@ -14,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/transaction")
@@ -24,7 +16,6 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
-    private final AccountService accountService;
     private final IdempotencyService idempotencyService;
 
     @PostMapping("/transfer")
@@ -39,11 +30,5 @@ public class TransactionController {
         
         TransferResponse response = transactionService.transfer(request, idempotencyKey);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/get-accounts")
-    public ResponseEntity<List<Account>> getAccounts(){
-        List<Account> accounts = accountService.findAll();
-        return ResponseEntity.ok(accounts);
     }
 }
